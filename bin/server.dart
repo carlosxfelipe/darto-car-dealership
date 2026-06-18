@@ -1,8 +1,12 @@
 import 'package:darto/darto.dart';
 import 'package:darto_openapi/darto_openapi.dart';
 import 'package:darto_car_dealership/cars_service.dart';
+import 'package:darto_car_dealership/port_killer.dart';
 
 void main() async {
+  // Libera a porta 3000 de processos anteriores
+  await freePort(3000);
+
   final app = Darto();
 
   // Integrando o plugin oficial do ecossistema Darto para Swagger/OpenAPI
@@ -17,6 +21,7 @@ void main() async {
   api.get(
     '/cars',
     summary: 'Lista todos os carros',
+    tags: ['Carros'],
     description: 'Retorna a lista de carros em estoque.',
     responses: {
       200: Res('Retorna a lista de carros',
@@ -32,6 +37,7 @@ void main() async {
   api.get(
     '/cars/:id',
     summary: 'Pega um carro pelo ID',
+    tags: ['Carros'],
     description: 'Busca um carro específico pelo seu ID.',
     request: Req(params: {'id': Schema.integer()}),
     responses: {
@@ -59,6 +65,7 @@ void main() async {
   api.post(
     '/cars',
     summary: 'Adiciona um carro',
+    tags: ['Carros'],
     description: 'Adiciona um novo carro ao estoque.',
     request: Req(
         json: Schema.object({
