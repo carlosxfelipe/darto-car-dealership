@@ -9,6 +9,9 @@ environment:
 # Add regular dependencies here.
 dependencies:
   path: ^1.9.0
+  darto: ^1.2.0
+  darto_openapi: ^1.0.0
+  darto_validator: ^1.1.1
 
 dev_dependencies:
   lints: ^6.0.0
