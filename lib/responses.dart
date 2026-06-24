@@ -1,10 +1,6 @@
 import 'package:darto_openapi/darto_openapi.dart';
 import 'package:darto_car_dealership/models.dart';
 
-// --- Respostas Globais/Comuns ---
-final resNotFound = Res('Recurso não encontrado');
-final resBadRequest = Res('Requisição inválida ou parâmetros incorretos');
-
 // --- Respostas Específicas das Rotas ---
 
 final listCarsResponses = {
@@ -13,11 +9,31 @@ final listCarsResponses = {
 
 final getCarByIdResponses = {
   200: Res('Retorna o carro solicitado', body: carSchema),
-  404: resNotFound,
-  400: resBadRequest,
+  404: Res('Carro não encontrado', body: Schema.object({
+    'message': Schema.string(),
+    'error': Schema.string(),
+    'statusCode': Schema.integer(),
+  })),
+  400: Res('Requisição inválida', body: Schema.object({
+    'message': Schema.string(),
+    'error': Schema.string(),
+    'statusCode': Schema.integer(),
+  })),
 };
 
 final createCarResponses = {
-  201: Res('Carro adicionado com sucesso', body: carCreateResponseSchema),
-  400: resBadRequest,
+  201: Res('Carro adicionado com sucesso', body: carSchema),
+  400: Res('Requisição inválida'),
+};
+
+final updateCarResponses = {
+  200: Res('Carro atualizado com sucesso', body: carSchema),
+  404: Res('Carro não encontrado'),
+  400: Res('Requisição inválida'),
+};
+
+final deleteCarResponses = {
+  200: Res('Carro deletado com sucesso', body: Schema.object({'message': Schema.string()})),
+  404: Res('Carro não encontrado'),
+  400: Res('Requisição inválida'),
 };

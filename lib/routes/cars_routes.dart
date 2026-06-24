@@ -21,7 +21,7 @@ void setupCarsRoutes(OpenApi api, CarsService carsService) {
     summary: 'Pega um carro pelo ID',
     tags: ['Carros'],
     description: 'Busca um carro específico pelo seu ID.',
-    request: Req(params: {'id': Schema.integer()}),
+    request: Req(params: {'id': Schema.string(format: 'uuid')}),
     responses: getCarByIdResponses,
     handler: controller.findOneById,
   );
@@ -34,5 +34,28 @@ void setupCarsRoutes(OpenApi api, CarsService carsService) {
     request: Req(json: carCreateSchema),
     responses: createCarResponses,
     handler: controller.create,
+  );
+
+  api.patch(
+    '/cars/:id',
+    summary: 'Atualiza um carro pelo ID',
+    tags: ['Carros'],
+    description: 'Atualiza os dados de um carro específico.',
+    request: Req(
+      params: {'id': Schema.string(format: 'uuid')},
+      json: carUpdateSchema,
+    ),
+    responses: updateCarResponses,
+    handler: controller.update,
+  );
+
+  api.delete(
+    '/cars/:id',
+    summary: 'Deleta um carro pelo ID',
+    tags: ['Carros'],
+    description: 'Remove um carro específico do estoque.',
+    request: Req(params: {'id': Schema.string(format: 'uuid')}),
+    responses: deleteCarResponses,
+    handler: controller.delete,
   );
 }

@@ -1,27 +1,34 @@
+import 'package:uuid/uuid.dart';
+
 class CarsService {
-  final List<Map<String, dynamic>> _cars = [
-    {
-      'id': 1,
-      'brand': 'Toyota',
-      'model': 'Corolla',
-    },
-    {
-      'id': 2,
-      'brand': 'Honda',
-      'model': 'Civic',
-    },
-    {
-      'id': 3,
-      'brand': 'Jeep',
-      'model': 'Cherokee',
-    },
-  ];
+  final _uuid = Uuid();
+  late List<Map<String, dynamic>> _cars;
+
+  CarsService() {
+    _cars = [
+      {
+        'id': _uuid.v4(),
+        'brand': 'Toyota',
+        'model': 'Corolla',
+      },
+      {
+        'id': _uuid.v4(),
+        'brand': 'Honda',
+        'model': 'Civic',
+      },
+      {
+        'id': _uuid.v4(),
+        'brand': 'Jeep',
+        'model': 'Cherokee',
+      },
+    ];
+  }
 
   List<Map<String, dynamic>> findAll() {
     return _cars;
   }
 
-  Map<String, dynamic>? findOneById(int id) {
+  Map<String, dynamic>? findOneById(String id) {
     try {
       return _cars.firstWhere((car) => car['id'] == id);
     } catch (_) {
@@ -31,11 +38,25 @@ class CarsService {
 
   Map<String, dynamic> create(String brand, String model) {
     final newCar = {
-      'id': _cars.isNotEmpty ? (_cars.last['id'] as int) + 1 : 1,
+      'id': _uuid.v4(),
       'brand': brand,
       'model': model,
     };
     _cars.add(newCar);
     return newCar;
+  }
+
+  Map<String, dynamic>? update(String id, Map<String, dynamic> updateCarDto) {
+    final car = findOneById(id);
+    if (car == null) return null;
+    
+    car['brand'] = updateCarDto['brand'] ?? car['brand'];
+    car['model'] = updateCarDto['model'] ?? car['model'];
+    
+    return car;
+  }
+
+  void delete(String id) {
+    _cars.removeWhere((car) => car['id'] == id);
   }
 }

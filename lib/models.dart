@@ -1,20 +1,22 @@
 import 'package:darto_openapi/darto_openapi.dart';
 
 final carSchema = Schema.object({
-  'id': Schema.integer(),
+  'id': Schema.string(format: 'uuid'),
   'brand': Schema.string(),
   'model': Schema.string(),
 });
 
 final carCreateSchema = Schema.object({
-  'brand': Schema.string(minLength: 2),
-  'model': Schema.string(minLength: 2),
+  'brand': Schema.string(),
+  'model': Schema.string(),
 }, required: [
   'brand',
   'model'
-]);
+], additionalProperties: false);
 
-final carCreateResponseSchema = Schema.object({
-  'status': Schema.string(),
-  'car': carSchema,
-});
+final carUpdateSchema = Schema.object({
+  'id': Schema.string(format: 'uuid'),
+  'brand': Schema.string(),
+  'model': Schema.string(),
+}, additionalProperties: false);
+
