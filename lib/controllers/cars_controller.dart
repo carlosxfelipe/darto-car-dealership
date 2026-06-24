@@ -11,7 +11,7 @@ class CarsController {
   }
 
   Response _notFound(Context c, String id) {
-    return c.status(404).json({
+    return c.notFound({
       'message': 'Carro com id $id não encontrado.',
       'error': 'Not Found',
       'statusCode': 404
@@ -31,8 +31,9 @@ class CarsController {
 
   Response create(Context c) {
     final body = c.req.valid<Map<String, dynamic>>('json');
-    final car = carsService.create(body['brand'] as String, body['model'] as String);
-    return c.status(201).json(car);
+    final car =
+        carsService.create(body['brand'] as String, body['model'] as String);
+    return c.created(car);
   }
 
   Response update(Context c) {
@@ -41,8 +42,9 @@ class CarsController {
     final body = c.req.valid<Map<String, dynamic>>('json');
 
     if (body.containsKey('id') && body['id'] != id) {
-      return c.status(400).json({
-        'message': 'O ID do carro não pode ser alterado no corpo da requisição.',
+      return c.badRequest({
+        'message':
+            'O ID do carro não pode ser alterado no corpo da requisição.',
         'error': 'Bad Request',
         'statusCode': 400
       });
@@ -67,8 +69,6 @@ class CarsController {
     }
 
     carsService.delete(id);
-    return c.ok({
-      'message': 'Carro com id $id deletado com sucesso.'
-    });
+    return c.ok({'message': 'Carro com id $id deletado com sucesso.'});
   }
 }
