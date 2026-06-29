@@ -1,6 +1,8 @@
 # 05 — Validação
 
-Darto oferece duas abordagens para validação: `zValidator` (automático) e `validator()` (controle total).
+Darto oferece duas abordagens para validação em rotas comuns: `zValidator` (automático) e `validator()` (controle total).
+
+> **💡 Dica:** Se você está construindo uma API REST pública e quer gerar documentação Swagger automaticamente enquanto valida os dados, utilize o pacote **`darto_zard_openapi`**. Com ele a validação é integrada na definição do contrato da rota (`createRoute`), substituindo a necessidade de adicionar middlewares de validação isolados. Veja a documentação em **[08 - Pacotes](./08-packages.md)**.
 
 ---
 

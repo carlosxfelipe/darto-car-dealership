@@ -275,51 +275,53 @@ app.get('/stats', [], (Context c) async =>
 
 ---
 
-## `darto_openapi` — OpenAPI 3.1 + Scalar Docs
+## `darto_zard_openapi` — OpenAPI 3.1 + Validação com Zard (Recomendado)
+
+> **Nova integração!** Valide as requisições e gere a documentação Swagger/Scalar a partir da mesma fonte de verdade (Single Source of Truth), inspirado no `zod-openapi` do Hono.
+> [Link no pub.dev](https://pub.dev/packages/darto_zard_openapi)
 
 ```yaml
 dependencies:
-  darto_openapi: ^1.0.0
+  darto_zard_openapi: ^1.0.0
 ```
 
 ```dart
-import 'package:darto_openapi/darto_openapi.dart';
+import 'package:darto_zard_openapi/darto_zard_openapi.dart';
 
-final api = OpenApi(
-  app,
-  info: Info(title: 'Blog API', version: '1.0.0'),
-  servers: [Server('http://localhost:3000')],
+final app = Darto();
+final api = OpenAPIDarto(app);
+
+// 1. Defina o schema uma única vez (Type-safe + Metadados da Doc)
+final userSchema = z.map({
+  'name': z.string().min(1).openapi(example: 'Ada Lovelace', description: 'Nome completo'),
+  'age': z.int().min(0).max(150),
+}).openapiSchema('User'); // openapiSchema registra o componente reutilizável
+
+// 2. Crie o contrato da rota de forma desacoplada
+final getUser = createRoute(
+  method: 'get',
+  path: '/users/:id',
+  summary: 'Buscar usuário',
+  tags: ['Users'],
+  request: Req(params: z.map({'id': z.string().uuid()}).openapiSchema()),
+  responses: [
+    Res(200, 'Usuário encontrado', body: userSchema),
+    Res(404, 'Não encontrado'),
+  ],
 );
 
-api.get(
-  '/posts/:id',
-  summary: 'Buscar post',
-  tags: ['posts'],
-  request: Req(params: {'id': Schema.integer()}),
-  responses: {
-    200: Res('Um post', body: Schema.object({
-      'id': Schema.integer(),
-      'title': Schema.string(),
-    }, required: ['id', 'title'])),
-  },
-  handler: (c) => c.ok({'id': c.req.paramInt('id'), 'title': 'Hello'}),
-);
+// 3. Acople o contrato, middlewares e o handler
+api.openapi(getUser, [], (c) {
+  // c.req.valid retorna os dados garantidamente validados
+  final params = c.req.valid<Map<String, dynamic>>('param');
+  final id = params['id'];
+  
+  return c.ok({'name': 'Ada Lovelace', 'age': 28});
+});
 
-api.post(
-  '/posts',
-  summary: 'Criar post',
-  tags: ['posts'],
-  request: Req(json: Schema.object({
-    'title': Schema.string(minLength: 1),
-    'tags': Schema.array(Schema.string()),
-  }, required: ['title'])),
-  responses: {201: Res('Criado')},
-  // Body validado disponível via c.req.valid('json'); inválido → 400 automático
-  handler: (c) => c.created(c.req.valid<Map<String, dynamic>>('json')),
-);
-
-// Monta GET /openapi.json (spec) e GET /docs (Scalar UI)
-app.use(api.docs());
+// 4. Monta GET /openapi.json (spec) e GET /docs (Scalar UI embutido)
+api.doc('/openapi.json', info: Info(title: 'Users API', version: '1.0.0'));
+app.get('/docs', [], scalarUI(url: '/openapi.json'));
 
 await app.listen(3000, () {
   print('spec → http://localhost:3000/openapi.json');

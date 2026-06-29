@@ -1,22 +1,18 @@
-import 'package:darto_openapi/darto_openapi.dart';
+import 'package:darto_zard_openapi/darto_zard_openapi.dart';
 
-final carSchema = Schema.object({
-  'id': Schema.string(format: 'uuid'),
-  'brand': Schema.string(),
-  'model': Schema.string(),
+final zCar = z.map({
+  'id': z.string().uuid(),
+  'brand': z.string(),
+  'model': z.string(),
 });
+final carSchema = zCar.openapiSchema('Car');
 
-final carCreateSchema = Schema.object({
-  'brand': Schema.string(),
-  'model': Schema.string(),
-}, required: [
-  'brand',
-  'model'
-], additionalProperties: false);
+final zCarCreate = z.map({'brand': z.string(), 'model': z.string()}).strict();
+final carCreateSchema = zCarCreate.openapiSchema('CarCreate');
 
-final carUpdateSchema = Schema.object({
-  'id': Schema.string(format: 'uuid'),
-  'brand': Schema.string(),
-  'model': Schema.string(),
-}, additionalProperties: false);
-
+final zCarUpdate = z.map({
+  'id': z.string().uuid().optional(),
+  'brand': z.string().optional(),
+  'model': z.string().optional(),
+}).strict();
+final carUpdateSchema = zCarUpdate.openapiSchema('CarUpdate');
